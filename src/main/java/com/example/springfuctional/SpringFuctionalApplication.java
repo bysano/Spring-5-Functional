@@ -1,5 +1,6 @@
 package com.example.springfuctional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import org.apache.catalina.LifecycleException;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,6 +11,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import reactor.ipc.netty.http.server.HttpServer;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -22,7 +24,15 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 public class SpringFuctionalApplication {
 
 	static RouterFunction getRouter() {
-		HandlerFunction hello = request -> ok().body(fromObject("Hello"));
+        ObjectMapper objectMapper = new ObjectMapper();
+        Object o = new Object();
+        try {
+            o = objectMapper.readValue(new File("src/main/resources/heroes.json"),Object.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Object finalO = o;
+        HandlerFunction hello = request -> ok().body(fromObject(finalO));
 
 		return
 				route(
